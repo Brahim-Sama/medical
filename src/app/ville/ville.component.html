@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head class="mb-5" th:include="~{ fragments/head::#head }"></head>
+  <body>
+    <header class="mb-5" th:include="~{ fragments/header::#header }"></header>
+
+    <main class="container">
+      <h1>Liste des villes</h1>
+
+      <form method="get" action="/ville">
+        <div class="row my-4">
+          <div class="col-4">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                placeholder="Rechercher"
+                aria-describedby="button-addon2"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="submit"
+                id="button-addon2"
+              >
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+          </div>
+          <div class="col-4">
+            <a href="/ville/add" class="btn btn-primary">Ajouter une ville</a>
+          </div>
+        </div>
+      </form>
+
+      <span class="badge bg-secondary"></span>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Code Postal</th>
+            <th>Pays</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let ville of villes">
+            <td>{{ ville.id }}</td>
+            <td>{{ ville.nom }}</td>
+            <td>{{ ville.codePostal }}</td>
+            <td>{{ ville.pays }}</td>
+            <td>
+              <a class="btn btn-secondary btn-sm"
+                ><i class="fa fa-pencil-square-o" aria-hidden="true"></i
+              ></a>
+              <button class="btn btn-danger btn-sm">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link"></a>
+          </li>
+        </ul>
+      </nav> -->
+    </main>
+
+    <footer></footer>
+  </body>
+</html>
