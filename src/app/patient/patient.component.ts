@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment.prod';
 import { Patient } from '../classes/patient';
+import { httpOptions } from '../variables';
 
 @Component({
   selector: 'app-patient',
@@ -10,15 +12,14 @@ import { Patient } from '../classes/patient';
 export class PatientComponent implements OnInit {
 
   patients : Array<Patient> = []; 
-  httpOptions = {
-    headers : new HttpHeaders({
-      'Authorization' : "Basic YWRtaW46MTIzNA==" // admin - 1234 
-    })
-  }
+  
 
   constructor(private http : HttpClient) { }
 
   ngOnInit(): void {
+    this.http.get<Patient[]>( environment.backendUri + "patient" , httpOptions).subscribe(
+      data => {this.patients = data }
+    )
   }
 
 }
