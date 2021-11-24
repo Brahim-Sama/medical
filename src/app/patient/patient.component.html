@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head class="mb-5"></head>
+  <body>
+    <header class="mb-5"></header>
+
+    <main class="container">
+      <h1>Liste des patients</h1>
+
+      <form method="get" action="/patient">
+        <div class="row my-4">
+          <div class="col-4">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                placeholder="Rechercher"
+                aria-describedby="button-addon2"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="submit"
+                id="button-addon2"
+              >
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+          </div>
+          <div class="col-4">
+            <a href="/patient/add" class="btn btn-primary"
+              >Ajouter un patient</a
+            >
+          </div>
+        </div>
+      </form>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nom & prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Ville / Pays</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let patient; for: patients">
+            <td {{patient.id}}></td>
+            <td {{patient.prenom }} {{patient.nom}}></td>
+            <td {{patient.email}}></td>
+            <td {{patient.telephone}}></td>
+            <td {{patient.ville?.nom}} - {{patient.ville?.pays}}></td>
+            <td>
+              <a
+                class="btn btn-secondary btn-sm"
+                th:href="@{'/patient/edit/' + ${ patient.id } }"
+                ><i class="fa fa-pencil-square-o" aria-hidden="true"></i
+              ></a>
+              <button
+                class="btn btn-danger btn-sm"
+                th:onclick="|supprimer( 'patient' , ${patient.id} )|"
+              >
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+
+    <footer th:include="~{ fragments/footer::#footer }"></footer>
+  </body>
+</html>
