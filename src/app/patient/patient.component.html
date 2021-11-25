@@ -1,80 +1,180 @@
-<!DOCTYPE html>
-<html lang="fr">
-  <head class="mb-5"></head>
-  <body>
-    <header class="mb-5"></header>
+<main class="container">
+  <a
+    data-bs-toggle="modal"
+    data-bs-target="#exampleModal"
+    class="btn btn-primary"
+    (click)="resetPatient()"
+    >Ajouter un patient</a
+  >
 
-    <main class="container">
-      <h1>Liste des patients</h1>
+  <button class="btn btn-danger ms-3" (click)="clearPatients()">Vider</button>
 
-      <form method="get" action="/patient">
-        <div class="row my-4">
-          <div class="col-4">
-            <div class="input-group mb-3">
+  <h1>Liste des patients</h1>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nom complet</th>
+        <th>Email</th>
+        <th>Téléphone</th>
+        <th>Ville - Pays</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let patient of patients">
+        <td>{{ patient.id }}</td>
+        <td>{{ patient.prenom }} {{ patient.nom }}</td>
+        <td>{{ patient.email }}</td>
+        <td>{{ patient.telephone }}</td>
+        <td>{{ patient.ville?.nom }} - {{ patient.ville?.pays }}</td>
+        <td>
+          <a
+            class="btn btn-secondary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+            (click)="edit(patient.id)"
+            ><i class="fa fa-pencil-square-o" aria-hidden="true"></i
+          ></a>
+          <button
+            class="btn btn-danger btn-sm ms-3"
+            (click)="delete(patient.id)"
+          >
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  {{ patient | json }}
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button
+            type="button"
+            class="close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form ngNativeValidate (submit)="submitPatient()">
+          <div class="modal-body">
+            <div class="form-line mb-4">
+              <label class="form-label">Nom *</label>
               <input
-                type="text"
                 class="form-control"
-                name="search"
-                placeholder="Rechercher"
-                aria-describedby="button-addon2"
+                minlength="2"
+                type="text"
+                name="nom"
+                placeholder="Nom de la patient"
+                required
+                [(ngModel)]="patient.nom"
               />
-              <button
-                class="btn btn-outline-secondary"
-                type="submit"
-                id="button-addon2"
+            </div>
+            <div class="form-line mb-4">
+              <label class="form-label">Prenom *</label>
+              <input
+                class="form-control"
+                minlength="2"
+                type="text"
+                name="prenom"
+                placeholder="Prenom de la patient"
+                required
+                [(ngModel)]="patient.prenom"
+              />
+            </div>
+            <div class="form-line mb-4">
+              <label>dateNaissance *</label>
+              <input
+                class="form-control"
+                type="date"
+                name="dateNaissance"
+                placeholder="dateNaissance"
+                required
+                [(ngModel)]="patient.dateNaissance"
+              />
+            </div>
+            <div class="form-line mb-4">
+              <label>adresse *</label>
+              <input
+                class="form-control"
+                type="text"
+                name="adresse"
+                placeholder="adresse"
+                required
+                [(ngModel)]="patient.adresse"
+              />
+            </div>
+            <div class="form-line mb-4">
+              <label>Email *</label>
+              <input
+                class="form-control"
+                type="text"
+                name="email"
+                placeholder="Email"
+                required
+                [(ngModel)]="patient.email"
+              />
+            </div>
+            <div class="form-line mb-4">
+              <label class="form-label">Telephone *</label>
+              <input
+                class="form-control"
+                minlength="2"
+                type="tel"
+                name="telephone"
+                placeholder="Telephone de la patient"
+                required
+                [(ngModel)]="patient.telephone"
+              />
+            </div>
+
+            <div class="form-line mb-4">
+              <label class="form-label">Ville *</label>
+              <select
+                name="ville"
+                id="ville"
+                required
+                class="form-select"
+                [(ngModel)]="patient.ville"
               >
-                <i class="fa fa-search" aria-hidden="true"></i>
-              </button>
+                <option value="">Sélectionner ville</option>
+                <option *ngFor="let ville of villes" [ngValue]="ville">
+                  {{ ville.nom }}
+                </option>
+              </select>
             </div>
           </div>
-          <div class="col-4">
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-          </div>
-          <div class="col-4">
-            <a href="/patient/add" class="btn btn-primary"
-              >Ajouter un patient</a
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              #closeButton
             >
+              Fermer
+            </button>
+            <button type="button" type="submit" class="btn btn-bs-primary">
+              Valider
+            </button>
           </div>
-        </div>
-      </form>
-
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Nom & prénom</th>
-            <th>Email</th>
-            <th>Téléphone</th>
-            <th>Ville / Pays</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let patient; for: patients">
-            <td {{patient.id}}></td>
-            <td {{patient.prenom }} {{patient.nom}}></td>
-            <td {{patient.email}}></td>
-            <td {{patient.telephone}}></td>
-            <td {{patient.ville?.nom}} - {{patient.ville?.pays}}></td>
-            <td>
-              <a
-                class="btn btn-secondary btn-sm"
-                th:href="@{'/patient/edit/' + ${ patient.id } }"
-                ><i class="fa fa-pencil-square-o" aria-hidden="true"></i
-              ></a>
-              <button
-                class="btn btn-danger btn-sm"
-                th:onclick="|supprimer( 'patient' , ${patient.id} )|"
-              >
-                <i class="fa fa-trash-o" aria-hidden="true"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </main>
-
-    <footer th:include="~{ fragments/footer::#footer }"></footer>
-  </body>
-</html>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>

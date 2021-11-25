@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import Ville from './classes/ville';
+import {Ville} from './classes/ville';
 
 
 @Component({
