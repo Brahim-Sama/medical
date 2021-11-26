@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { environment } from 'src/environments/environment.prod';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { Ville } from '../classes/ville';
 import { VilleService } from '../services/ville.service';
 import { httpOptions } from '../variables';
@@ -14,7 +15,10 @@ export class VilleComponent implements OnInit {
   villes: Array<Ville> = [];
   ville: Ville = new Ville();
   search: string = '';
-  @ViewChild('closeButton') closeButtonElement: any;
+  errorMessage: string = '';
+  success: boolean = false;
+
+  @ViewChild('closebutton') closebuttonelement: any;
 
   constructor(private vs: VilleService) {}
 
@@ -23,17 +27,25 @@ export class VilleComponent implements OnInit {
   }
 
   reloadCities(): void {
+    console.log('search == ' + this.search);
     this.villes = [];
-    this.vs.getAll(this.search).subscribe(
-      (data) => {
+
+    this.vs.getAll().subscribe({
+      next: (data) => {
         this.villes = data;
-      }
-      //, err => console.log( "Une erreur est survenue" )
-    );
+      },
+      error: (err) => {
+        console.log(err.error.message);
+      },
+    });
   }
 
   clearCities(): void {
     this.villes = [];
+  }
+
+  resetCity() {
+    this.ville = new Ville();
   }
 
   delete(id: number | undefined): void {
@@ -47,7 +59,7 @@ export class VilleComponent implements OnInit {
     }
   }
 
-  edit(id: number | undefined) {
+  edit(id?: number) {
     this.vs.getById(id).subscribe(
       (data) => {
         this.ville = data;
@@ -57,20 +69,28 @@ export class VilleComponent implements OnInit {
   }
 
   submitCity() {
+    let obs: Observable<any>;
     if (this.ville.id == undefined) {
-      this.vs.add(this.ville).subscribe((data) => {
-        this.closeButtonElement.nativeElement.click();
-        this.reloadCities();
-      });
+      // Ajout
+      obs = this.vs.add(this.ville);
     } else {
-      this.vs.update(this.ville).subscribe((data) => {
-        this.closeButtonElement.nativeElement.click();
-        this.reloadCities();
-      });
+      // Edition
+      obs = this.vs.update(this.ville);
     }
-  }
 
-  resetCity() {
-    this.ville = new Ville();
+    obs.subscribe({
+      next: () => {
+        this.reloadCities();
+        this.closebuttonelement.nativeElement.click();
+        this.success = true;
+        setTimeout(() => {
+          // <<<---using ()=> syntax
+          this.success = false;
+        }, 5000);
+      },
+      error: (err) => {
+        this.errorMessage = err.error.message;
+      },
+    });
   }
 }

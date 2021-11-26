@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { environment } from 'src/environments/environment.prod';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { Patient } from '../classes/patient';
 import { Ville } from '../classes/ville';
 import { PatientService } from '../services/patient.service';
@@ -13,23 +14,32 @@ import { httpOptions } from '../variables';
   styleUrls: ['./patient.component.css'],
 })
 export class PatientComponent implements OnInit {
-  villes: Array<Ville> = [];
-  ville: Ville = new Ville();
-
-  patients: Array<Patient> = [];
   patient: Patient = new Patient();
-  @ViewChild('closeButton') closeButtonElement: any;
+  patients: Array<Patient> = [];
+  villes: Array<Ville> = [];
+  search: string = '';
+  errorMessage: string = '';
+  success: boolean = false;
 
-  constructor(private ps: PatientService, private vs: VilleService) {}
+  @ViewChild('closebutton') closebuttonelement: any;
+
+  constructor(private vs: VilleService, private ps: PatientService) {}
 
   ngOnInit(): void {
     this.reloadPatients();
-    this.getVille();
+
+    this.vs.getAll().subscribe({
+      next: (data) => {
+        this.villes = data;
+      },
+      error: (err) => {
+        console.log(err.error.message);
+      },
+    });
   }
 
-  reloadPatients(): void {
-    this.patients = [];
-    this.ps.getAll().subscribe(
+  reloadPatients() {
+    this.ps.getAll(this.search).subscribe(
       (data) => {
         this.patients = data;
       }
@@ -37,8 +47,48 @@ export class PatientComponent implements OnInit {
     );
   }
 
-  clearPatients(): void {
-    this.patients = [];
+  reset(): void {
+    this.errorMessage = '';
+    this.patient = new Patient();
+  }
+
+  submitPatient(): void {
+    let obs: Observable<any>;
+    if (this.patient.id == undefined) {
+      // Ajout
+      obs = this.ps.add(this.patient);
+    } else {
+      // Edition
+      obs = this.ps.update(this.patient);
+    }
+
+    obs.subscribe({
+      next: () => {
+        this.reloadPatients();
+        this.closebuttonelement.nativeElement.click();
+        this.success = true;
+        setTimeout(() => {
+          // <<<---using ()=> syntax
+          this.success = false;
+        }, 5000);
+      },
+      error: (err) => {
+        this.errorMessage = err.error.message;
+      },
+    });
+  }
+
+  checkVille(v1: Ville, v2: Ville): boolean {
+    return v1 != undefined && v2 != undefined && v1.id == v2.id;
+  }
+
+  edit(id?: number) {
+    this.ps.getById(id).subscribe(
+      (data) => {
+        this.patient = data;
+      }
+      //, err => console.log( "Une erreur est survenue" )
+    );
   }
 
   delete(id: number | undefined): void {
@@ -50,48 +100,5 @@ export class PatientComponent implements OnInit {
         //, err => console.log( "Une erreur est survenue" )
       );
     }
-  }
-
-  edit(id: number | undefined) {
-    this.getVille();
-    this.ps.getById(id).subscribe(
-      (data) => {
-        this.patient = data;
-      }
-      //, err => console.log( "Une erreur est survenue" )
-    );
-  }
-
-  submitPatient() {
-    if (this.patient.id == undefined) {
-      this.ps.add(this.patient).subscribe((data) => {
-        this.closeButtonElement.nativeElement.click();
-        this.reloadPatients();
-      });
-    } else {
-      this.ps.update(this.patient).subscribe((data) => {
-        this.closeButtonElement.nativeElement.click();
-        this.reloadPatients();
-      });
-    }
-  }
-
-  getVille() {
-    this.villes = [];
-    this.vs.getAll().subscribe(
-      (data) => {
-        this.villes = data;
-      }
-      //, err => console.log( "Une erreur est survenue" )
-    );
-  }
-
-  checkVille(v1: Ville, v2: Ville): boolean {
-    return v1.id == v2.id;
-  }
-
-  resetPatient() {
-    this.patient = new Patient();
-    this.getVille();
   }
 }

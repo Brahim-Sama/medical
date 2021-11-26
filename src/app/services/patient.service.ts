@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Patient } from '../classes/patient';
+
 import { httpOptions } from '../variables';
 
 @Injectable({
@@ -39,14 +40,14 @@ export class PatientService {
     );
   }
 
-  add(p: Patient): Observable<any> {
-    return this.http.post(environment.backendUri + 'patient', p, httpOptions);
+  add(v: Patient): Observable<any> {
+    return this.http.post(environment.backendUri + 'patient', v, httpOptions);
   }
 
-  update(p: Patient): Observable<any> {
+  update(v: Patient): Observable<any> {
     return this.http.put(
-      environment.backendUri + 'patient/' + p.id,
-      p,
+      environment.backendUri + 'patient/' + v.id,
+      v,
       httpOptions
     );
   }

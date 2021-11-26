@@ -1,17 +1,24 @@
 <main class="container">
-  <a
+  <div class="alert alert-success" *ngIf="success">
+    Opération effectuée avec succès
+  </div>
+
+  <button
     data-bs-toggle="modal"
     data-bs-target="#exampleModal"
     class="btn btn-primary"
     (click)="resetCity()"
-    >Ajouter une ville</a
   >
+    Ajouter une ville
+  </button>
 
   <button class="btn btn-primary ms-3" (click)="reloadCities()">
     Actualiser
   </button>
 
   <button class="btn btn-danger ms-3" (click)="clearCities()">Vider</button>
+
+  <h1 class="my-4">Liste des villes</h1>
 
   <form method="get" (submit)="reloadCities()">
     <div class="row my-4">
@@ -40,9 +47,11 @@
     </div>
   </form>
 
-  <h1 class="my-4">Liste des villes</h1>
+  <div class="alert alert-info" *ngIf="villes.length == 0">
+    Aucune ville trouvée
+  </div>
 
-  <table class="table table-striped">
+  <table class="table table-striped" *ngIf="villes.length > 0">
     <thead>
       <tr>
         <th>Id</th>
@@ -61,10 +70,10 @@
         <td>{{ ville.pays }}</td>
         <td>
           <a
-            class="btn btn-secondary btn-sm"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
             (click)="edit(ville.id)"
+            class="btn btn-secondary btn-sm"
             ><i class="fa fa-pencil-square-o" aria-hidden="true"></i
           ></a>
           <button class="btn btn-danger btn-sm ms-3" (click)="delete(ville.id)">
@@ -74,83 +83,95 @@
       </tr>
     </tbody>
   </table>
+</main>
 
-  {{ ville | json }}
-  <div
-    class="modal fade"
-    id="exampleModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5
+          class="modal-title"
+          id="exampleModalLabel"
+          *ngIf="ville.id == undefined"
+        >
+          Ajouter une ville
+        </h5>
+        <h5
+          class="modal-title"
+          id="exampleModalLabel"
+          *ngIf="ville.id != undefined"
+        >
+          Editer une ville
+        </h5>
+        <button
+          type="button"
+          #closebutton
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form ngNativeValidate (submit)="submitCity()">
+        <div class="modal-body">
+          <div class="alert alert-danger" *ngIf="errorMessage.length > 0">
+            {{ errorMessage }}
+          </div>
+
+          <div class="form-line mb-4">
+            <label class="form-label">Nom *</label>
+            <input
+              class="form-control"
+              minlength="2"
+              type="text"
+              name="nom"
+              placeholder="Nom de la ville"
+              [(ngModel)]="ville.nom"
+              required
+            />
+          </div>
+          <div class="form-line mb-4">
+            <label>Code postal *</label>
+            <input
+              class="form-control"
+              type="text"
+              name="codePostal"
+              placeholder="Code Postal"
+              [(ngModel)]="ville.codePostal"
+              required
+            />
+          </div>
+
+          <div class="form-line mb-4">
+            <label class="form-label">Pays *</label>
+            <input
+              class="form-control"
+              type="text"
+              name="pays"
+              placeholder="Pays"
+              [(ngModel)]="ville.pays"
+              required
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
           <button
             type="button"
-            class="close"
+            class="btn btn-secondary"
             data-bs-dismiss="modal"
-            aria-label="Close"
           >
-            <span aria-hidden="true">&times;</span>
+            Fermer
+          </button>
+          <button type="button" type="submit" class="btn btn-primary">
+            Valider
           </button>
         </div>
-
-        <form ngNativeValidate (submit)="submitCity()">
-          <div class="modal-body">
-            <div class="form-line mb-4">
-              <label class="form-label">Nom *</label>
-              <input
-                class="form-control"
-                minlength="2"
-                type="text"
-                name="nom"
-                placeholder="Nom de la ville"
-                required
-                [(ngModel)]="ville.nom"
-              />
-            </div>
-            <div class="form-line mb-4">
-              <label>Code postal *</label>
-              <input
-                class="form-control"
-                type="text"
-                name="codePostal"
-                placeholder="Code Postal"
-                required
-                [(ngModel)]="ville.codePostal"
-              />
-            </div>
-
-            <div class="form-line mb-4">
-              <label class="form-label">Pays *</label>
-              <input
-                class="form-control"
-                type="text"
-                name="pays"
-                placeholder="Pays"
-                required
-                [(ngModel)]="ville.pays"
-              />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-              #closeButton
-            >
-              Fermer
-            </button>
-            <button type="button" type="submit" class="btn btn-bs-primary">
-              Valider
-            </button>
-          </div>
-        </form>
-      </div>
+      </form>
     </div>
   </div>
-</main>
+</div>

@@ -6,9 +6,11 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { VilleComponent } from './ville/ville.component';
-import {HttpClientModule} from '@angular/common/http';
-import { PatientComponent } from './patient/patient.component'; 
+import { HttpClientModule } from '@angular/common/http';
+import { PatientComponent } from './patient/patient.component';
 import { FormsModule } from '@angular/forms';
+import { RdvComponent } from './rdv/rdv.component';
+import { RdvDetailsComponent } from './rdv/rdv-details/rdv-details.component';
 
 @NgModule({
   declarations: [
@@ -16,15 +18,12 @@ import { FormsModule } from '@angular/forms';
     HeaderComponent,
     FooterComponent,
     VilleComponent,
-    PatientComponent
+    PatientComponent,
+    RdvComponent,
+    RdvDetailsComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule
-  ],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
