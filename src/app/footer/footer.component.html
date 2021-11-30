@@ -20,12 +20,12 @@
           </h5>
           <button
             type="button"
+            #closebutton
             class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
           ></button>
         </div>
-        <button (click)="update()">Maj</button>
         <form
           name=""
           method="post"
@@ -42,7 +42,7 @@
                   name="tata"
                   placeholder="Votre nom"
                   required
-                  [(ngModel)]="user.name"
+                  [(ngModel)]="app.user.name"
                 />
               </div>
 
@@ -54,7 +54,7 @@
                   name="email"
                   placeholder="Votre email"
                   required
-                  [(ngModel)]="user.email"
+                  [(ngModel)]="app.user.email"
                 />
               </div>
 
@@ -66,7 +66,7 @@
                   name="username"
                   placeholder="Votre nom d'utilisateur"
                   required
-                  [(ngModel)]="user.username"
+                  [(ngModel)]="app.user.username"
                 />
               </div>
 
@@ -77,7 +77,7 @@
                   type="password"
                   name="password"
                   placeholder="Votre mot de passe"
-                  [(ngModel)]="user.password"
+                  [(ngModel)]="app.user.password"
                 />
               </div>
             </div>

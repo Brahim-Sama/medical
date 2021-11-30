@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthGuard } from '../auth.guard';
 import { User } from '../classes/user';
@@ -11,24 +11,24 @@ import { FooterComponent } from '../footer/footer.component';
   providers: [FooterComponent],
 })
 export class HeaderComponent implements OnInit {
+  user: User = new User();
+
   constructor(
     private router: Router,
     public guard: AuthGuard,
-    private fc: FooterComponent
+    private fc: FooterComponent,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {}
 
-  doact() {
-    this.fc.update();
-  }
+  submit() {}
 
   logout(): void {
     console.log('logout');
     sessionStorage.removeItem('connected');
     this.router.navigate(['login']);
     sessionStorage.removeItem('user');
-    this.fc.update();
     //ChangeDetectorRef.detectChanges()
   }
 }

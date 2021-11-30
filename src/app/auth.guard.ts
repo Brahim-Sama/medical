@@ -70,7 +70,9 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     if (ss != null) {
       user = JSON.parse(ss);
       return user;
+    } else {
+      console.log('je retourne null');
+      return new User();
     }
-    return new User();
   }
 }
