@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -7,7 +7,7 @@ import { AuthGuard } from '../auth.guard';
 import { User } from '../classes/user';
 import { FooterComponent } from '../footer/footer.component';
 import { HeaderComponent } from '../header/header.component';
-import { httpOptions } from '../variables';
+import { ConfigService } from '../services/config.service';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +23,8 @@ export class LoginComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private app: AppComponent,
-    private guard: AuthGuard
+    private guard: AuthGuard,
+    private config: ConfigService
   ) {}
 
   ngOnInit(): void {}
@@ -32,18 +33,21 @@ export class LoginComponent implements OnInit {
     let u = { username: this.username, password: this.password };
 
     // http://localhost:8080/api/login
-    this.http
-      .post<User>(environment.backendUri + 'login', u, httpOptions)
-      .subscribe({
-        next: (data) => {
-          sessionStorage.setItem('connected', '1');
-          sessionStorage.setItem('user', JSON.stringify(data));
-          this.router.navigate(['patient']);
-          this.app.user = data;
-        },
-        error: (err) => {
-          console.log(err.error.message);
-        },
-      });
+    this.http.post<User>(environment.backendUri + 'login', u).subscribe({
+      next: (data) => {
+        sessionStorage.setItem('connected', '1');
+        sessionStorage.setItem('user', JSON.stringify(data));
+        this.router.navigate(['patient']);
+        this.app.user = data;
+        this.config.httpOptions = {
+          headers: new HttpHeaders({
+            Authorization: 'Basic ' + data.password,
+          }),
+        };
+      },
+      error: (err) => {
+        console.log(err.error.message);
+      },
+    });
   }
 }

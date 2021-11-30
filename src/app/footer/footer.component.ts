@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { AppComponent } from '../app.component';
 import { AuthGuard } from '../auth.guard';
 import { User } from '../classes/user';
-import { httpOptions } from '../variables';
+import { ConfigService } from '../services/config.service';
 
 @Component({
   selector: 'app-footer',
@@ -26,18 +26,17 @@ export class FooterComponent implements OnInit {
   constructor(
     private guard: AuthGuard,
     private http: HttpClient,
-    public app: AppComponent
-  ) {}
-
-  ngOnInit(): void {}
-
-  ngAfterViewInit() {
-    try {
-      this.app.user = this.guard.getUser();
-    } catch (e) {
-      this.app.user = new User();
-    }
+    public app: AppComponent,
+    private config: ConfigService
+  ) {
+    this.app.user = new User();
   }
+
+  ngOnInit(): void {
+    this.app.user = this.guard.getUser();
+  }
+
+  ngAfterViewInit() {}
 
   submit() {
     let inputEl: HTMLInputElement = this.inputEl?.nativeElement;
@@ -71,7 +70,7 @@ export class FooterComponent implements OnInit {
         .put<User>(
           environment.backendUri + 'profil/' + user.id,
           formData,
-          httpOptions
+          this.config.httpOptions
         )
         .subscribe({
           next: (data) => {
