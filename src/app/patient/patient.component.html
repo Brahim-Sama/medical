@@ -3,6 +3,8 @@
     Opération effectuée avec succès
   </div>
 
+  {{ config.httpOptions | json }}
+
   <h1>Liste des patients</h1>
   <button
     data-bs-toggle="modal"
@@ -40,7 +42,11 @@
     </div>
   </form>
 
-  <table class="table table-striped">
+  <div class="alert alert-info" *ngIf="patients.length == 0">
+    Aucun patient trouvé
+  </div>
+
+  <table class="table table-striped" *ngIf="patients.length > 0">
     <thead>
       <tr>
         <th>Id</th>

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -13,6 +13,7 @@ import { RdvComponent } from './rdv/rdv.component';
 import { RdvDetailsComponent } from './rdv/rdv-details/rdv-details.component';
 import { LoginComponent } from './login/login.component';
 import { VilleDetailsComponent } from './ville-details/ville-details.component';
+import { ConfigService } from './services/config.service';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { VilleDetailsComponent } from './ville-details/ville-details.component';
     VilleDetailsComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule],
-  providers: [],
+  providers: [ConfigService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

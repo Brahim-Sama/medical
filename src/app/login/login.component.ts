@@ -39,11 +39,13 @@ export class LoginComponent implements OnInit {
         sessionStorage.setItem('user', JSON.stringify(data));
         this.router.navigate(['patient']);
         this.app.user = data;
-        this.config.httpOptions = {
-          headers: new HttpHeaders({
-            Authorization: 'Basic ' + data.password,
-          }),
-        };
+
+        this.config.httpOptions.headers = new HttpHeaders({
+          Authorization: 'Basic ' + data.password,
+        });
+
+        console.log('Basic ' + data.password);
+        console.log(this.config.httpOptions.headers);
       },
       error: (err) => {
         console.log(err.error.message);
