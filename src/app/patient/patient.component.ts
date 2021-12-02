@@ -7,6 +7,7 @@ import { Patient } from '../classes/patient';
 import { Ville } from '../classes/ville';
 import { ConfigService } from '../services/config.service';
 import { PatientService } from '../services/patient.service';
+import { RdvService } from '../services/rdv.service';
 import { VilleService } from '../services/ville.service';
 
 @Component({
@@ -17,6 +18,8 @@ import { VilleService } from '../services/ville.service';
 })
 export class PatientComponent implements OnInit {
   patient: Patient = new Patient();
+  patientRdv: Array<any> = [];
+
   patients: Array<Patient> = [];
   villes: Array<Ville> = [];
   search: string = '';
@@ -28,8 +31,46 @@ export class PatientComponent implements OnInit {
   constructor(
     private vs: VilleService,
     private ps: PatientService,
+    private rdvs: RdvService,
     public config: ConfigService
   ) {}
+
+  // PatientRDV*
+  /*[
+    1 = [ rdv1, rdv2 ]
+    10 = [rdv10]
+  ]*/
+
+  getPatientRdv(): void {
+    this.patientRdv = [];
+
+    // on récupère la liste des rdv afin de les trier / organiser dans le tableau this.patientRdv
+    this.rdvs.getAll().subscribe((data) => {
+      data.forEach((rdv) => {
+        //[ rdv1 , rdv2... ]
+        if (rdv.patient != undefined && rdv.patient.id != undefined) {
+          if (this.patientRdv[rdv.patient.id] == undefined) {
+            this.patientRdv[rdv.patient.id] = [];
+          }
+
+          this.patientRdv[rdv.patient.id].push(rdv);
+        }
+      });
+
+      //
+      let patientTries: Array<Patient> = [];
+      data.forEach((rdv) => {
+        if (rdv.patient != undefined) patientTries.push(rdv.patient);
+      });
+
+      this.patients.forEach((patient) => {
+        if (patient.id != undefined && this.patientRdv[patient.id] == undefined)
+          patientTries.push(patient);
+      });
+
+      this.patients = patientTries;
+    });
+  }
 
   ngOnInit(): void {
     this.reloadPatients();
@@ -49,6 +90,19 @@ export class PatientComponent implements OnInit {
     this.ps.getAll(this.search).subscribe(
       (data) => {
         this.patients = data;
+        this.getPatientRdv();
+        // je boucle sur les patients pour faire une req http et récupérer les rdv de chaq patient
+        /* data.forEach( patient => {
+          this.rdvs.getAll(undefined , patient.id ).subscribe(
+            drdv => { 
+              if( patient.id != undefined )
+                this.patientRdv[ patient.id  ] = drdv 
+              }
+          )
+          
+        }  ) */
+
+        console.log(this.patientRdv);
       }
       //, err => console.log( "Une erreur est survenue" )
     );

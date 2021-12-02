@@ -1,8 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Ville } from '../classes/ville';
+import { GetAllVilleAction } from '../ngrx/villes.actions';
+import { VillesStateEnum, VilleState } from '../ngrx/villes.reducer';
 import { VilleService } from '../services/ville.service';
 
 @Component({
@@ -19,29 +22,28 @@ export class VilleComponent implements OnInit {
 
   @ViewChild('closebutton') closebuttonelement: any;
 
-  constructor(private vs: VilleService) {}
+  VilleState$: Observable<VilleState> | null = null;
+  readonly VilleStateEnum = VillesStateEnum;
+
+  constructor(private vs: VilleService, private store: Store<any>) {}
 
   ngOnInit(): void {
-    this.reloadCities();
+    //this.reloadCities();
+    this.VilleState$ = this.store.pipe(map((state) => state.catalogState));
+
+    this.store.dispatch(new GetAllVilleAction({}));
   }
 
   reloadCities(): void {
     console.log('search == ' + this.search);
-    this.villes = [];
 
-    this.vs.getAll().subscribe({
-      next: (data) => {
-        this.villes = data;
-      },
-      error: (err) => {
-        console.log(err.error.message);
-      },
-    });
+    /* this.vs.getAll().subscribe({
+      next: (data) => { this.villes = data },
+      error: (err) => { console.log(err.error.message) }
+    }); */
   }
 
-  clearCities(): void {
-    this.villes = [];
-  }
+  clearCities(): void {}
 
   resetCity() {
     this.ville = new Ville();
